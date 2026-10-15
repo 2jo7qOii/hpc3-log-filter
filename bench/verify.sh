@@ -24,6 +24,9 @@ echo "g++    : $(g++ --version | head -1)"
 echo "python : $(python3 --version)"
 
 echo
+# 数据、标准答案与输出目录都不随包分发，先建好
+mkdir -p data gold out results
+
 echo "##################### 1. 构建 #####################"
 echo "\$ g++ -O2 -std=c++17 -pthread bench/baseline.cpp -I src -o bench/baseline"
 g++ -O2 -std=c++17 -pthread bench/baseline.cpp -I src -o bench/baseline
@@ -33,17 +36,13 @@ ls -l bench/baseline bench/optimized
 
 echo
 echo "##################### 2. 输入指纹 #####################"
+# 数据集不随提交包分发（规范要求）。若 data/ 为空，按三级回退补建（见 bench/gen_helper.sh）；
+# 三条路径产出的文件逐字节相同，故 sha256 可直接与 results/input-sha256*.txt 核对。
+source bench/gen_helper.sh
+if [ -n "$HPC3_GEN" ]; then echo "补建数据将使用平台生成器: $HPC3_GEN"
+else echo "未找到 generate_logs.py，补建数据将使用程序自带生成器（同算法同编码，产出逐字节相同）"; fi
+gen_all_datasets
 for f in n1m-r50 n1m-r0 n1m-r100 n2m-b90 n10m-r50; do
-  if [ ! -f "data/$f.bin" ]; then
-    echo "缺少 data/$f.bin —— 用平台生成器补建"
-    case $f in
-      n1m-r50)    python3 ../generate_logs.py --count 1000000  --hit-percent 50 --pattern random --seed 2026 --output data/$f.bin ;;
-      n1m-r0)     python3 ../generate_logs.py --count 1000000  --hit-percent 0  --pattern random --seed 2026 --output data/$f.bin ;;
-      n1m-r100)   python3 ../generate_logs.py --count 1000000  --hit-percent 100 --pattern random --seed 2026 --output data/$f.bin ;;
-      n2m-b90)    python3 ../generate_logs.py --count 2000000  --hit-percent 90 --pattern blocks --seed 2026 --output data/$f.bin ;;
-      n10m-r50)   python3 ../generate_logs.py --count 10000000 --hit-percent 50 --pattern random --seed 2026 --output data/$f.bin ;;
-    esac
-  fi
   printf '%s  %s\n' "$(sha256sum "data/$f.bin" | cut -c1-16)" "$f.bin"
 done
 
@@ -84,7 +83,7 @@ python3 tests/test_regression.py bench/optimized 2>&1 | tail -4
 echo
 echo "##################### 6. 参数化差分（60 组） #####################"
 python3 bench/diff_check.py --exe ./bench/optimized --base ./bench/baseline \
-        --tmp /tmp/diff_check_verify 2>&1 | tail -3
+        2>&1 | tail -3
 
 echo
 echo "##################### 7. 输出逐字节比对 #####################"

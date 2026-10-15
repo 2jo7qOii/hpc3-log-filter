@@ -16,8 +16,9 @@ fingerprint-check.txt      5 个数据集输出与标准答案的逐字节比对
 ab-1m-r50.txt              性能实验：1M random hit50（A/B 交替重复原始样本）
 ab-2m-b90.txt              性能实验：2M blocks hit90（退化场景）
 ab-10m-r50.txt             性能实验：10M random hit50
-ab-1m-r0.txt               性能实验：1M hit0（边界）
-ab-1m-r100.txt             性能实验：1M hit100（边界）
+ab-1m-r0.txt               性能实验：1M hit0（边界）      [第四轮补齐：顺序口径 A/B，3 轮]
+ab-1m-r100.txt             性能实验：1M hit100（边界）    [第四轮补齐：顺序口径 A/B，3 轮]
+ab-v1-vs-v2.txt            两版实现并排复现：v1(两遍) vs v2(单遍无分支)，逐样本交替
 exp-threads-10m.txt        线程扩展性实验（twopass 1/2/4 线程 vs single）
 exp-1m.txt                 早期 1M 多实现对比
 baseline-1m-file.txt       基线单独一次 5 样本记录
@@ -52,3 +53,22 @@ bench/micro_variants.cpp    消融微基准（5 变体）；配合 bench/micro_c
 bench/analyze_versions.py   规模扫描统计（min/分位/CV/bootstrap 置信区间）
 bench/analyze_interleaved.py 交替样本配对统计（逐轮符号检验）
 bench/analyze_data_structure.py 输入数据的谓词通过率/游程/可预测性分析
+
+---- 第四轮补齐：命中率两端证据 + 图表可交叉校验 ----
+interleaved-extremes.txt        逐样本交替 A/B 原始样本（0% / 100% / blocks 90%）
+interleaved-extremes-summary.txt 上述样本的配对统计与结论（本文件补充说明）
+bench/charts_from_data.py       从原始样本直接重画图表（chart-*-data.svg）
+
+背景：命中率图中「0%」与「100%」两点的数值原先只内嵌在 bench/make_charts.py 里，
+      仓库内没有对应原始样本。现已用 bench/bench_run.sh 按同一口径补齐：
+        bash bench/bench_run.sh data/n1m-r0.bin   3 | tee results/ab-1m-r0.txt
+        bash bench/bench_run.sh data/n1m-r100.bin 3 | tee results/ab-1m-r100.txt
+      实测（跨轮最小值）：0%  为 8.594 / 2.979 = 2.89×；100% 为 4.007 / 4.206 = 0.95×。
+      与交替口径的配对统计（2.02× / 0.94×）方向一致，量级差异来自"取跨轮最小值"。
+
+两种出图方式互为交叉校验（数值不一致即说明样本被替换或内嵌值被手改）：
+  bench/make_charts.py            数值内嵌，保证交付图表逐字节可复现 → chart-*.svg
+  bench/charts_from_data.py       数值现读原始样本，保证"重跑→出图"闭环 → chart-*-data.svg
+  两者对照结果：规模扫描 6 个点完全一致；命中率图中 50% 点两来源不同
+  （图表内嵌 7.85/3.79=2.07× 取自规模扫描，而 ab-1m-r50.txt 为 14.813/8.167=1.81×，
+   图注已注明该点与规模扫描同源）。

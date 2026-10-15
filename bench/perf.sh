@@ -50,20 +50,18 @@ echo "构建完成: bench/baseline  bench/optimized  bench/micro_variants"
 
 echo
 echo "##################### 1. 规模扫描（顺序 A/B，--input 固定文件） #####################"
+source bench/gen_helper.sh
+gen_dataset 100000  50 random data/n100000-r50.bin
+gen_dataset 250000  50 random data/n250000-r50.bin
+gen_dataset 500000  50 random data/n500000-r50.bin
+gen_dataset 2000000 50 random data/n2000000-r50.bin
+gen_all_datasets
 {
   echo "############ 统一会话规模扫描（A/B 各一轮，每轮 5 次）############"
   echo "口径：--input 固定文件；A=baseline B=optimized；每轮 5 次，取跨轮最小值"
   echo "采集时间: $(date -Is)"
   echo
   for f in n100000-r50 n250000-r50 n500000-r50 n1m-r50 n2000000-r50 n10m-r50; do
-    if [ ! -f "data/$f.bin" ]; then
-      case $f in
-        n100000-r50)  python3 ../generate_logs.py --count 100000   --hit-percent 50 --pattern random --seed 2026 --output data/$f.bin ;;
-        n250000-r50)  python3 ../generate_logs.py --count 250000   --hit-percent 50 --pattern random --seed 2026 --output data/$f.bin ;;
-        n500000-r50)  python3 ../generate_logs.py --count 500000   --hit-percent 50 --pattern random --seed 2026 --output data/$f.bin ;;
-        n2000000-r50) python3 ../generate_logs.py --count 2000000  --hit-percent 50 --pattern random --seed 2026 --output data/$f.bin ;;
-      esac
-    fi
     [ -f "gold/$f.out" ] || ./bench/baseline --input "data/$f.bin" --output "gold/$f.out" --repeats 1 > /dev/null
     echo "===== $f  ($(stat -c%s "data/$f.bin") 字节) ====="
     bash bench/bench_run.sh "data/$f.bin" "$SCALE_ROUNDS" 2>&1 | grep -E 'round='

@@ -11,7 +11,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-GEN=../generate_logs.py          # 平台提供的生成器
+GEN=../generate_logs.py          # 平台提供的生成器（缺失时由 verify.sh 的回退路径补建）
 mkdir -p data gold out results
 
 echo "===== 1. 编译 ====="

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """参数化差分验证：多种命中率/分布/查询下，与 baseline 输出逐字节比对。
-用法: python3 bench/diff_check.py --exe ./bench/optimized --base ./bench/baseline --tmp /tmp/dc"""
-import argparse, hashlib, pathlib, random, shutil, struct, subprocess, sys
+用法: python3 bench/diff_check.py --exe ./bench/optimized --base ./bench/baseline [--tmp DIR]"""
+import argparse, hashlib, pathlib, random, shutil, struct, subprocess, sys, tempfile
 
 HEADER = struct.Struct('<8sIIQ'); RECORD = struct.Struct('<QIIII')
 def encode(rows): return HEADER.pack(b'NCULOG01',1,24,len(rows)) + b''.join(RECORD.pack(*r) for r in rows)
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--exe', required=True); ap.add_argument('--base', required=True)
-ap.add_argument('--tmp', default='/tmp/diff_check')
+ap.add_argument('--tmp', default=str(pathlib.Path(tempfile.gettempdir()) / 'diff_check'))
 a = ap.parse_args()
 tmp = pathlib.Path(a.tmp); shutil.rmtree(tmp, ignore_errors=True); tmp.mkdir(parents=True)
 exe = str(pathlib.Path(a.exe).resolve()); base = str(pathlib.Path(a.base).resolve())
