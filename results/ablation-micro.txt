@@ -1,0 +1,74 @@
+############ 消融微基准 —— 5 个变体（空闲机重采，第 2 轮）############
+# 变体 1=baseline 原样  2=+阈值局部化  3=谓词改按位与  4=+无条件写+掩码推进  5=4 的等价写法
+# 每轮计时前用 clflushopt 把输入刷出缓存；同一进程内轮次×变体交替
+# 编译：g++ -O2 -std=c++17 -pthread -mclflushopt -march=x86-64 bench/micro_variants.cpp bench/micro_core.cpp -I src
+# 采集：2026-10-15 17:26~17:27
+
+
+########## data/n1m-r50.bin ##########
+### 微基准变体对比  input=data/n1m-r50.bin rounds=14 query=[1000,2000) lat>=100 flags=3
+### count=1000000 expected_hits=500129
+### check 1_baseline_4cmp hits=500129  PASS
+### check 2_baseline_localthr hits=500129  PASS
+### check 3_shortcircuit_mask hits=500129  PASS
+### check 4_branchless_cmov hits=500129  PASS
+### check 5_branchless_guarded hits=500129  PASS
+
+变体                         min      median   (ms)   全部样本
+1_baseline_4cmp             8.478      10.719   10.897 13.457 11.118 8.478 8.982 9.871 11.711 9.940 10.719 12.591 11.619 9.520 9.925 9.687 
+2_baseline_localthr         9.657      11.747   13.553 13.528 10.700 11.747 11.441 11.488 11.500 11.720 14.373 16.838 12.840 12.738 9.657 10.847 
+3_shortcircuit_mask         9.008      10.669   11.168 9.959 11.511 12.011 10.669 9.008 9.397 10.631 12.182 14.846 10.801 9.236 9.906 10.238 
+4_branchless_cmov           4.172       6.424   6.957 5.647 5.898 5.969 4.172 6.781 6.496 7.657 6.424 5.286 7.103 7.794 5.766 6.025 
+5_branchless_guarded        4.138       5.890   6.797 7.654 6.110 5.056 4.593 5.890 4.138 4.819 8.812 5.215 11.515 5.522 5.347 6.024 
+
+
+########## data/n2m-b90.bin ##########
+### 微基准变体对比  input=data/n2m-b90.bin rounds=14 query=[1000,2000) lat>=100 flags=3
+### count=2000000 expected_hits=1800000
+### check 1_baseline_4cmp hits=1800000  PASS
+### check 2_baseline_localthr hits=1800000  PASS
+### check 3_shortcircuit_mask hits=1800000  PASS
+### check 4_branchless_cmov hits=1800000  PASS
+### check 5_branchless_guarded hits=1800000  PASS
+
+变体                         min      median   (ms)   全部样本
+1_baseline_4cmp             9.432      14.090   14.090 18.199 13.176 12.918 18.505 12.839 19.082 13.773 15.189 23.462 13.227 17.231 9.432 13.404 
+2_baseline_localthr        10.653      16.683   13.503 12.967 10.653 13.269 17.235 14.701 18.339 14.193 16.747 16.683 19.051 17.237 12.766 18.774 
+3_shortcircuit_mask        10.728      15.246   13.357 18.436 13.246 11.906 13.861 10.892 15.246 15.331 16.156 15.016 20.583 16.715 10.728 16.715 
+4_branchless_cmov           8.539      14.212   11.124 12.416 8.539 11.818 13.297 15.599 16.704 16.945 14.665 16.738 20.300 11.603 14.212 13.385 
+5_branchless_guarded       12.821      15.183   17.096 13.156 12.918 15.183 12.821 15.786 19.804 12.965 14.209 14.205 19.059 13.126 18.902 16.607 
+
+
+########## data/n1m-r0.bin ##########
+### 微基准变体对比  input=data/n1m-r0.bin rounds=10 query=[1000,2000) lat>=100 flags=3
+### count=1000000 expected_hits=0
+### check 1_baseline_4cmp hits=0  PASS
+### check 2_baseline_localthr hits=0  PASS
+### check 3_shortcircuit_mask hits=0  PASS
+### check 4_branchless_cmov hits=0  PASS
+### check 5_branchless_guarded hits=0  PASS
+
+变体                         min      median   (ms)   全部样本
+1_baseline_4cmp             9.609      11.687   9.998 11.687 9.609 10.330 12.057 10.026 9.800 11.794 11.855 11.933 
+2_baseline_localthr         9.621      10.890   12.215 10.494 9.621 10.890 10.729 10.213 10.338 13.124 11.795 12.346 
+3_shortcircuit_mask         6.711       8.259   6.970 6.711 9.489 8.096 7.373 8.812 9.298 9.038 8.259 7.643 
+4_branchless_cmov           4.108       5.289   5.082 4.108 4.369 6.287 5.427 5.289 4.118 5.325 4.912 5.538 
+5_branchless_guarded        4.215       4.970   4.970 5.844 4.263 4.892 4.546 4.589 6.797 5.533 4.215 5.229 
+
+
+########## data/n1m-r100.bin ##########
+### 微基准变体对比  input=data/n1m-r100.bin rounds=10 query=[1000,2000) lat>=100 flags=3
+### count=1000000 expected_hits=1000000
+### check 1_baseline_4cmp hits=1000000  PASS
+### check 2_baseline_localthr hits=1000000  PASS
+### check 3_shortcircuit_mask hits=1000000  PASS
+### check 4_branchless_cmov hits=1000000  PASS
+### check 5_branchless_guarded hits=1000000  PASS
+
+变体                         min      median   (ms)   全部样本
+1_baseline_4cmp             4.369       8.727   8.048 9.372 7.497 8.943 8.751 8.727 7.092 9.962 5.586 4.369 
+2_baseline_localthr         5.925       8.394   9.271 7.326 7.580 7.166 9.399 5.925 9.421 8.746 8.394 7.504 
+3_shortcircuit_mask         5.513       8.778   7.295 8.778 11.458 11.958 5.513 10.788 6.803 9.552 8.716 7.161 
+4_branchless_cmov           5.025       9.209   8.236 8.460 10.004 9.209 10.231 5.025 10.725 5.684 9.249 8.669 
+5_branchless_guarded        4.614       8.198   7.862 8.198 5.692 6.743 4.614 7.354 8.649 9.642 8.249 8.548 
+

@@ -28,3 +28,27 @@ chart-hitrate.svg          命中率扫描图表（耗时 + 加速比）
                            由 bench/make_charts.py 生成（无第三方依赖）
 
 说明：本目录只放可复核的原始记录，不存放数据集与输出文件（见 ../.gitignore）。
+
+---- 第三轮（独立复测与归因更正）新增证据 ----
+interleaved-ab.txt          逐样本交替 A/B 原始样本（1M/10M/0%/100%/blocks 五组）
+                            方法：每样本点独立进程；轮内 A→B、偶数轮反转顺序
+ablation-micro.txt          消融微基准原始样本（5 变体 × 4 个数据集）
+                            变体 1=baseline 2=+阈值局部化 3=谓词按位与 4=+无条件写 5=等价写法
+twopass-vs-single-10m.txt   空闲机重测：twopass 1/2/4 线程 vs single（10M）
+ab-live/                    第三轮全套复现输出（含统计汇总与 JSON）
+                            由 PERF_ASSUME_YES=1 bash bench/perf.sh 生成
+verify-quick.txt            第三轮快检查记录（构建/指纹/公开测试/回归/差分/逐字节比对）
+
+第三轮结论要点（详见 REPORT.md 第 7 节）：
+  * 加速比可复现区间 1.7×~2.1×（原报告 2.52× 含"顺序 A/B + 取最小值"两个偏乐观因素）；
+  * 收益来源更正为"消除数据相关的写出分支"（贡献 >95%），谓词改写与阈值局部化≈0；
+  * 3.4 候选二/候选五的结论由"实测否定"降级为"未验证"（原始样本缺失）。
+
+---- 可复现入口（第三轮新增工具）----
+bench/verify.sh             快检查：构建+指纹+公开测试+回归+60 组差分+逐字节比对（约 35 秒）
+bench/perf.sh               完整性能复现：规模扫描+交替 A/B+消融微基准+统计汇总（约 10 分钟）
+bench/interleaved.sh        逐样本交替 A/B 测量（单数据集）
+bench/micro_variants.cpp    消融微基准（5 变体）；配合 bench/micro_core.cpp 编译
+bench/analyze_versions.py   规模扫描统计（min/分位/CV/bootstrap 置信区间）
+bench/analyze_interleaved.py 交替样本配对统计（逐轮符号检验）
+bench/analyze_data_structure.py 输入数据的谓词通过率/游程/可预测性分析

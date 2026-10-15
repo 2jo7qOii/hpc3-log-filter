@@ -15,6 +15,16 @@
 #   回归测试: python3 tests/test_regression.py bench/optimized
 #   差分验证: python3 bench/diff_check.py --exe ./bench/optimized --base ./bench/baseline
 #
+# [第三轮新增：一键复现实验]
+#   快检查（约 35 秒）: bash bench/verify.sh
+#   完整性能复现（约 10 分钟，含 10M 数据）: PERF_ASSUME_YES=1 bash bench/perf.sh 4 20
+#   逐样本交替 A/B 单测: bash bench/interleaved.sh data/n1m-r50.bin 20 6
+#   消融微基准: g++ -O2 -std=c++17 -pthread -mclflushopt -march=x86-64 \
+#                 bench/micro_variants.cpp bench/micro_core.cpp -I src -o bench/micro_variants
+#               ./bench/micro_variants data/n1m-r50.bin 14
+#   统计脚本: python3 bench/analyze_interleaved.py / analyze_versions.py / analyze_data_structure.py
+#   产物: results/ 下新增原始样本；results/ab-live/ 放全套复现输出（不覆盖既有证据）
+#
 # [运行]
 #   ./bench/optimized --input data/n1m-r50.bin --output out/result.bin --repeats 5
 #   可选: --impl single|twopass  默认 single（实测最快）

@@ -16,6 +16,7 @@ out/
 build/
 bench/baseline
 bench/optimized
+bench/micro_variants
 bench/optimized-asan
 *.o
 *.obj
@@ -34,6 +35,9 @@ __pycache__/
 *~
 *.bak
 .DS_Store
+
+# ---------- 第三轮的临时复现输出目录（正式证据已归档到 results/*.txt）----------
+results/ab-live/
 
 # ---------- 例外：results/ 里的证据文本必须提交 ----------
 !results/*.txt
