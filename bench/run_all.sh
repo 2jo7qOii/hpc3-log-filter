@@ -63,6 +63,29 @@ bash bench/bench_run.sh data/n10m-r50.bin 5 | tee results/ab-10m-r50.txt
 bash bench/bench_run.sh data/n1m-r0.bin   2 | tee results/ab-1m-r0.txt
 bash bench/bench_run.sh data/n1m-r100.bin 2 | tee results/ab-1m-r100.txt
 
+echo "===== 8b. 规模扫描（命中率 50%）====="
+gen 100000   50 random n100000-r50.bin
+gen 250000   50 random n250000-r50.bin
+gen 500000   50 random n500000-r50.bin
+gen 2000000  50 random n2000000-r50.bin
+{
+  echo "############ 统一会话规模扫描 ############"
+  echo "口径：--input 固定文件；A=baseline B=optimized；每轮各 5 次取跨轮最小值"
+  echo "采集时间: $(date -Is)"
+  echo
+  for f in n100000-r50 n250000-r50 n500000-r50 n1m-r50 n2000000-r50 n10m-r50; do
+    [ -f "data/$f.bin" ] || continue
+    [ -f "gold/$f.out" ] || ./bench/baseline --input "data/$f.bin" --output "gold/$f.out" --repeats 1 > /dev/null
+    echo "===== $f  ($(stat -c%s data/$f.bin) 字节) ====="
+    bash bench/bench_run.sh "data/$f.bin" 4 2>&1 | grep -E 'round='
+    echo
+  done
+} > results/scale-sweep.txt 2>&1
+echo "规模扫描完成 -> results/scale-sweep.txt"
+
+echo "===== 8c. 生成图表 ====="
+python3 bench/make_charts.py
+
 echo "===== 9. 线程扩展性（10M）====="
 { for t in 1 2 4; do
     echo "--- twopass --threads $t ---"

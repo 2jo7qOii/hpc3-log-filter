@@ -23,6 +23,11 @@ bench/optimized-asan
 *.out.exe
 a.out
 
+# ---------- Python 缓存 ----------
+__pycache__/
+*.pyc
+*.pyo
+
 # ---------- 编辑器 / 备份 / 系统垃圾 ----------
 *.swp
 *.swo
