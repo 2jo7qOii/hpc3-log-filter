@@ -14,6 +14,12 @@
 #
 #  用法:  bash bench/package.sh          （在工程根目录执行，即 work/）
 #  产物:  ../HPC-3-submit.tar.gz         （≤ 32 MiB）
+#
+#  可复现性：打包对 tar 做了归一化（文件按名排序、mtime 固定、属主/权限归零，
+#  并设 SOURCE_DATE_EPOCH 供 gzip 使用），因此同一份源码重复打包得到**逐字节
+#  相同**的 tar.gz（sha256/md5 均一致）。可用环境变量覆盖归一化时间：
+#      HPC3_MTIME='2026-10-15 00:00:00' HPC3_SOURCE_DATE_EPOCH=1760544000 bash bench/package.sh
+#  每次打包后请把 sha256 记入 results/package-fingerprint.txt 以便存档核对。
 # ============================================================================
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -80,11 +86,22 @@ else
 fi
 [ "$fail" -eq 0 ] || { echo "自检未通过，已中止打包"; exit 1; }
 
-echo "===== 4. 打包 ====="
+echo "===== 4. 打包（归一化，保证同一份源码每次产出逐字节相同）====="
 rm -f "$OUT_TGZ"
-tar -czf "$OUT_TGZ" -C "$(dirname "$STAGE")" HPC-3-submit
+# 归一化：文件按名字排序、时间戳固定、属主与权限归零 —— 这样 tar 头部不含
+# 打包时刻/机器/用户等信息，同一份源码重复打包得到完全相同的 sha256/md5。
+# 附: SOURCE_DATE_EPOCH 供 gzip 使用（gzip 会把时间戳写进头部）。
+TAR_MTIME="${HPC3_MTIME:-2026-10-15 00:00:00}"
+export SOURCE_DATE_EPOCH="${HPC3_SOURCE_DATE_EPOCH:-1760544000}"   # 2026-10-15T00:00:00Z
+tar --sort=name \
+    --mtime="$TAR_MTIME" \
+    --owner=0 --group=0 --numeric-owner \
+    --mode='u+rwX,go+rX,go-w' \
+    -czf "$OUT_TGZ" -C "$(dirname "$STAGE")" HPC-3-submit
 SIZE=$(stat -c%s "$OUT_TGZ")
 printf '产物: %s\n大小: %s 字节 (%.2f MiB，上限 32 MiB)\n' "$OUT_TGZ" "$SIZE" "$(echo "$SIZE/1048576" | bc -l)"
+printf '归一化参数: mtime=%s  SOURCE_DATE_EPOCH=%s\n' "$TAR_MTIME" "$SOURCE_DATE_EPOCH"
+printf '指纹: sha256=%s\n      md5=%s\n' "$(sha256sum "$OUT_TGZ" | cut -d' ' -f1)" "$(md5sum "$OUT_TGZ" | cut -d' ' -f1)"
 
 echo "===== 5. 包内清单复核 ====="
 echo "顶层条目: $(tar -tzf "$OUT_TGZ" | cut -d/ -f1 | sort -u | tr '\n' ' ')"

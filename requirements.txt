@@ -40,6 +40,15 @@
 #   统计脚本: python3 bench/analyze_interleaved.py / analyze_versions.py / analyze_data_structure.py
 #   产物: results/ 下新增原始样本；results/ab-live/ 放全套复现输出（不覆盖既有证据）
 #
+# [打包] 生成正式提交包并自动完成规范自检（单根目录/CMakeLists/无绝对路径/
+#        无软链接/无构建产物/无隐藏文件），且打包结果可复现（逐字节相同）：
+#          bash bench/package.sh        → ../HPC-3-submit.tar.gz
+#        该脚本对 tar 做了归一化（按名排序、mtime 固定、属主/权限归零，并设
+#        SOURCE_DATE_EPOCH），因此同一份源码重复打包得到**逐字节相同**的 tar.gz
+#        （实测两次打包 sha256/md5 一致）。核对方式：重新打包后比对 sha256。
+#        注：本文件（requirements.txt）在包内，故不记录包自身的指纹——那会自我指涉；
+#            包的可信度由"可复现"保证：同一份源码必得同一个包。
+#
 # [第四轮新增：图表可从原始样本重算]
 #   交付图表（数值内嵌，逐字节可复现）: python3 bench/make_charts.py
 #   数据驱动出图（现读 results/ 原始样本）: python3 bench/charts_from_data.py
