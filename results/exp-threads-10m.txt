@@ -1,0 +1,30 @@
+输入: n10m-r50.bin (10M, random, hit50)  数据量 229MB
+机器逻辑核数: 2
+--- twopass --threads 1 ---
+sample=0 core_ms=188.430411 matched=5000126 check=PASS
+sample=1 core_ms=167.153556 matched=5000126 check=PASS
+sample=2 core_ms=242.690475 matched=5000126 check=PASS
+sample=3 core_ms=296.911652 matched=5000126 check=PASS
+sample=4 core_ms=258.175278 matched=5000126 check=PASS
+median_core_ms=242.690475 actual_hit_percent=50.00126 input_Mrecords_per_s=41.20474856
+--- twopass --threads 2 ---
+sample=0 core_ms=264.802169 matched=5000126 check=PASS
+sample=1 core_ms=226.835432 matched=5000126 check=PASS
+sample=2 core_ms=193.113926 matched=5000126 check=PASS
+sample=3 core_ms=214.570526 matched=5000126 check=PASS
+sample=4 core_ms=222.018176 matched=5000126 check=PASS
+median_core_ms=222.018176 actual_hit_percent=50.00126 input_Mrecords_per_s=45.04135733
+--- twopass --threads 4 ---
+sample=0 core_ms=175.247701 matched=5000126 check=PASS
+sample=1 core_ms=159.648612 matched=5000126 check=PASS
+sample=2 core_ms=190.867752 matched=5000126 check=PASS
+sample=3 core_ms=169.610199 matched=5000126 check=PASS
+sample=4 core_ms=191.836926 matched=5000126 check=PASS
+median_core_ms=175.247701 actual_hit_percent=50.00126 input_Mrecords_per_s=57.0620895
+--- single (默认) ---
+sample=0 core_ms=70.359554 matched=5000126 check=PASS
+sample=1 core_ms=72.154442 matched=5000126 check=PASS
+sample=2 core_ms=62.622163 matched=5000126 check=PASS
+sample=3 core_ms=55.071665 matched=5000126 check=PASS
+sample=4 core_ms=56.606756 matched=5000126 check=PASS
+median_core_ms=62.622163 actual_hit_percent=50.00126 input_Mrecords_per_s=159.6878728
