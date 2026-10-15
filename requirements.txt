@@ -1,0 +1,28 @@
+# HPC-3 日志压缩与稳定筛选优化 —— 构建与运行依赖说明
+#
+# 本项目为纯 C++17 单文件项目，不依赖任何第三方库。
+# 仅使用 C++ 标准库：<algorithm> <atomic> <chrono> <cstddef> <iomanip>
+#                   <iostream> <set> <string> <thread> <vector>
+#
+# ---------------------------------------------------------------------------
+# [构建] g++ 13.3.0（或任何支持 C++17 的编译器，需支持 std::thread）
+#   优化实现: g++ -O2 -std=c++17 -pthread src/optimized.cpp -I src -o bench/optimized
+#   原始基线: g++ -O2 -std=c++17 -pthread bench/baseline.cpp -I src -o bench/baseline
+#   （bench/baseline.cpp 与平台提供的 baseline.cpp 逐字节一致，未做任何修改）
+#
+# [测试] Python 3.12 —— 仅使用标准库 unittest，无需 pip install
+#   公开测试: python3 tests/test_public.py bench/optimized
+#   回归测试: python3 tests/test_regression.py bench/optimized
+#   差分验证: python3 bench/diff_check.py --exe ./bench/optimized --base ./bench/baseline
+#
+# [运行]
+#   ./bench/optimized --input data/n1m-r50.bin --output out/result.bin --repeats 5
+#   可选: --impl single|twopass  默认 single（实测最快）
+#         --threads N            仅对 --impl twopass 生效
+#
+# [输入数据] 由平台提供的 generate_logs.py 生成（log-generator.v1）：
+#   python3 generate_logs.py --count 1000000 --hit-percent 50 --pattern random \
+#           --seed 2026 --output data/n1m-r50.bin
+#   各输入的 sha256 记录在 results/input-sha256*.txt 与 results/manifest-*.json
+#
+# 说明：本文件不含任何 pip 包，平台无需联网安装依赖。
