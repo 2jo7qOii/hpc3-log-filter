@@ -40,6 +40,11 @@
 #   统计脚本: python3 bench/analyze_interleaved.py / analyze_versions.py / analyze_data_structure.py
 #   产物: results/ 下新增原始样本；results/ab-live/ 放全套复现输出（不覆盖既有证据）
 #
+# [向量化诊断] 若需复核 REPORT.md 第 3.6 节的编译器诊断，用这两个单循环源：
+#   g++ -O2 -std=c++17 -pthread -fopt-info-vec-all=stdout -c bench/onlyloop.cpp -I src -o /tmp/onlyloop.o
+#   g++ -O2 -std=c++17 -pthread -fopt-info-vec-all=stdout -c bench/baseLoop.cpp -I src -o /tmp/baseLoop.o
+#   （内容分别与 src/optimized.cpp 的单遍循环、bench/baseline.cpp 的循环逐字相同）
+#
 # [打包] 生成正式提交包并自动完成规范自检（单根目录/CMakeLists/无绝对路径/
 #        无软链接/无构建产物/无隐藏文件），且打包结果可复现（逐字节相同）：
 #          bash bench/package.sh        → ../HPC-3-submit.tar.gz
