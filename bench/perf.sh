@@ -17,7 +17,10 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 LIVE=results/ab-live
-mkdir -p "$LIVE"
+# 数据集、标准答案与输出目录都不随包分发，必须先建好
+# （缺 gold/ 会让 baseline 报 "cannot create output"，且该错误被 > /dev/null 吞掉，
+#   形成"脚本静默停在第 1 步"的假象 —— 由第四步复现时发现）
+mkdir -p data gold out "$LIVE"
 
 SCALE_ROUNDS="${1:-4}"
 INTER_ROUNDS="${2:-20}"

@@ -37,7 +37,9 @@ cp -p src/support.hpp src/optimized.cpp          "$STAGE/src/"
 cp -p src/support.hpp                            "$STAGE/support.hpp"
 cp -p src/optimized.cpp                          "$STAGE/optimized.cpp"
 cp -p bench/baseline.cpp                         "$STAGE/baseline.cpp"
-cp -p bench/baseline.cpp bench/*.py bench/*.sh   "$STAGE/bench/"
+# bench/ 下所有 *.cpp / *.py / *.sh 一律进包（micro_*.cpp 被 perf.sh 的消融实验引用，
+# 早先只复制了 baseline.cpp，导致 perf.sh 第 4 步编译失败 —— 已修正为通配）
+cp -p bench/*.cpp bench/*.py bench/*.sh          "$STAGE/bench/"
 cp -p tests/test_public.py tests/test_regression.py "$STAGE/tests/"
 # 证据只收文本/JSON/SVG，避免把数据集、输出与图表草稿带进去
 find results -maxdepth 1 -type f \( -name '*.txt' -o -name '*.json' -o -name '*.svg' \) \
@@ -60,6 +62,17 @@ for f in src/optimized.cpp src/support.hpp requirements.txt CMakeLists.txt REPOR
 done
 # ③ 多文件项目必须有 CMakeLists.txt
 [ -f "$STAGE/CMakeLists.txt" ] && echo "  ✅ 多文件项目已提供 CMakeLists.txt" || { echo "  ❌ 缺 CMakeLists.txt"; fail=1; }
+# ③a 自动扫描：脚本里引用到的 bench/、src/ 文件必须都在包内
+missing=0
+refs=$(grep -ohE '(bench|src)/[A-Za-z0-9_.-]+\.(cpp|hpp|py|sh)' "$STAGE"/bench/*.sh "$STAGE"/bench/*.py 2>/dev/null | sort -u)
+for r in $refs; do
+  if [ ! -e "$STAGE/$r" ]; then printf '  ❌ 脚本引用了但包内缺失  %s\n' "$r"; missing=1; fi
+done
+if [ "$missing" -eq 0 ]; then
+  echo "  ✅ 脚本引用的 bench/、src/ 文件全部在包内（自动扫描 $(echo "$refs" | wc -w) 个路径）"
+else
+  fail=1
+fi
 # ③b 根目录副本必须与 src/ 下原件逐字节相同
 if cmp -s "$STAGE/support.hpp" "$STAGE/src/support.hpp" && cmp -s "$STAGE/baseline.cpp" "$STAGE/bench/baseline.cpp"; then
   echo "  ✅ 根目录 baseline.cpp / support.hpp 与 src、bench 内文件逐字节一致"

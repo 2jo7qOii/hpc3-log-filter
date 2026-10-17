@@ -11,7 +11,6 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-GEN=../generate_logs.py          # 平台提供的生成器（缺失时由 verify.sh 的回退路径补建）
 mkdir -p data gold out results
 
 echo "===== 1. 编译 ====="
@@ -19,15 +18,11 @@ g++ -O2 -std=c++17 -pthread bench/baseline.cpp  -I src -o bench/baseline
 g++ -O2 -std=c++17 -pthread src/optimized.cpp   -I src -o bench/optimized
 
 echo "===== 2. 生成/确认输入数据 ====="
-gen() {  # gen <count> <hit> <pattern> <outfile>
-  [ -f "data/$4" ] || python3 "$GEN" --count "$1" --hit-percent "$2" --pattern "$3" \
-                        --seed 2026 --output "data/$4"
-}
-gen 1000000  50 random n1m-r50.bin
-gen 1000000   0 random n1m-r0.bin
-gen 1000000 100 random n1m-r100.bin
-gen 2000000  90 blocks n2m-b90.bin
-gen 10000000 50 random n10m-r50.bin
+# 数据集不随包分发。三级回退补建见 bench/gen_helper.sh：
+#   平台 generate_logs.py → 包内同级副本 → 程序自带生成器（产出逐字节相同）
+source bench/gen_helper.sh
+[[ -n "$HPC3_GEN" ]] && echo "使用平台生成器: $HPC3_GEN" || echo "未找到 generate_logs.py，使用程序自带生成器（同算法，产出逐字节相同）"
+gen_all_datasets
 
 echo "===== 3. 生成标准答案（baseline 输出，作为输出指纹）====="
 for f in n1m-r50 n1m-r0 n1m-r100 n2m-b90 n10m-r50; do
