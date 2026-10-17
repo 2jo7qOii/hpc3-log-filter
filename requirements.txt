@@ -32,6 +32,8 @@
 #
 # [第三轮新增：一键复现实验]
 #   快检查（约 35 秒）: bash bench/verify.sh
+#     终端打印摘要（环境/两次测试/60 组差分/5 个数据集逐字节比对）；
+#     全量记录写入 results/verify-quick.txt
 #   完整性能复现（约 10 分钟，含 10M 数据）: PERF_ASSUME_YES=1 bash bench/perf.sh 4 20
 #   逐样本交替 A/B 单测: bash bench/interleaved.sh data/n1m-r50.bin 20 6
 #   消融微基准: g++ -O2 -std=c++17 -pthread -mclflushopt -march=x86-64 \

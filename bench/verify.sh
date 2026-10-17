@@ -13,7 +13,12 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 OUT=results/verify-quick.txt
-exec > "$OUT" 2>&1          # 全量记录写文件；终端只打印末尾摘要（见脚本最后一步）
+# 全量记录写文件；终端保留摘要。注意：这里**不能**用 `exec > "$OUT"`，
+# 那会把整个脚本（包括末尾摘要）的输出都转到文件里，终端将看不到任何内容。
+# 因此改为把正文包在一个重定向的块里，摘要留在块外输出到终端。
+: > "$OUT"
+exec 3>&1                   # 保存终端 stdout，供末尾摘要使用
+{
 
 echo "##################### 0. 环境 #####################"
 date -Is
@@ -29,9 +34,9 @@ mkdir -p data gold out results
 
 echo "##################### 1. 构建 #####################"
 echo "\$ g++ -O2 -std=c++17 -pthread bench/baseline.cpp -I src -o bench/baseline"
-g++ -O2 -std=c++17 -pthread bench/baseline.cpp -I src -o bench/baseline
+g++ -O2 -std=c++17 -pthread bench/baseline.cpp -I src -o bench/baseline 2>&1
 echo "\$ g++ -O2 -std=c++17 -pthread src/optimized.cpp  -I src -o bench/optimized"
-g++ -O2 -std=c++17 -pthread src/optimized.cpp  -I src -o bench/optimized
+g++ -O2 -std=c++17 -pthread src/optimized.cpp  -I src -o bench/optimized 2>&1
 ls -l bench/baseline bench/optimized
 
 echo
@@ -51,7 +56,7 @@ echo "##################### 3. 标准答案指纹 #####################"
 for f in n1m-r50 n1m-r0 n1m-r100 n2m-b90 n10m-r50; do
   if [ ! -f "gold/$f.out" ]; then
     echo "生成 gold/$f.out（baseline，--repeats 1）"
-    ./bench/baseline --input "data/$f.bin" --output "gold/$f.out" --repeats 1 | tail -1
+    ./bench/baseline --input "data/$f.bin" --output "gold/$f.out" --repeats 1 2>&1 | tail -1
   fi
   printf '%s  %s\n' "$(sha256sum "gold/$f.out" | cut -c1-16)" "$f.out"
 done
@@ -74,16 +79,16 @@ elif [ -f ./test_public.py ]; then
 else
   echo "（未提供平台原始 test_public.py，跳过逐字节比对；不影响下面的测试运行）"
 fi
-python3 tests/test_public.py bench/optimized 2>&1 | tail -4
+python3 tests/test_public.py bench/optimized 2>&1 >&1 | tail -4
 
 echo
 echo "##################### 5. 自建回归测试 #####################"
-python3 tests/test_regression.py bench/optimized 2>&1 | tail -4
+python3 tests/test_regression.py bench/optimized 2>&1 >&1 | tail -4
 
 echo
 echo "##################### 6. 参数化差分（60 组） #####################"
 python3 bench/diff_check.py --exe ./bench/optimized --base ./bench/baseline \
-        2>&1 | tail -3
+        2>&1 >&1 | tail -3
 
 echo
 echo "##################### 7. 输出逐字节比对 #####################"
@@ -95,8 +100,11 @@ done
 
 echo
 echo "全部快速检查完成。原始记录: $OUT"
+} > "$OUT" 2>&1
 
-# 终端摘要（完整记录在 $OUT）
+# ---- 以下在重定向块之外：写终端（同时不影响已写入的文件）----
 echo
-echo "================ 摘要 ================"
+echo "================ 摘要（完整记录见 $OUT）================"
 grep -E '✅|❌|Ran [0-9]+ tests|^OK$|总计 [0-9]+ 次比对|^kernel|^cpu|^nproc|^g\+\+|^python' "$OUT" | tail -25
+echo "======================================================"
+exec 1>&3 3>&-               # 恢复终端 stdout（保险）
