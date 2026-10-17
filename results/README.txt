@@ -58,6 +58,8 @@ bench/analyze_data_structure.py 输入数据的谓词通过率/游程/可预测�
 interleaved-extremes.txt        逐样本交替 A/B 原始样本（0% / 100% / blocks 90%）
 interleaved-extremes-summary.txt 上述样本的配对统计与结论（本文件补充说明）
 bench/charts_from_data.py       从原始样本直接重画图表（chart-*-data.svg）
+source-generated-vs-file.txt    输入来源对比：--count 现场生成 vs --input 固定文件
+                                （逐样本交替 8 轮 × 3 样本；结论：无系统性差异，见 5.4）
 vectorization-report.txt        向量化证据：编译器 -fopt-info-vec-* 诊断 + 反汇编 +
                                 手工 AVX2 原型的结论（对应 REPORT.md 第 3.6 节）
 
