@@ -88,6 +88,19 @@ for spec in "n2m-b90 4" "n1m-r0 3" "n1m-r100 3"; do
 done
 
 echo
+echo "##################### 3b. 线程扩展性（10M，twopass 1/2/4 vs single） #####################"
+# 说明：REPORT.md 5.5 节引用的 exp-threads-10m.txt 原先只由 run_all.sh 生成，
+# 导致单独跑 perf.sh 时第 6 步统计汇总会出现"缺该文件，跳过"。这里一并生成。
+{ for t in 1 2 4; do
+    echo "--- twopass --threads $t ---"
+    ./bench/optimized --input data/n10m-r50.bin --repeats 5 --impl twopass --threads "$t" | grep -E '^sample=|^median_core'
+  done
+  echo "--- single ---"
+  ./bench/optimized --input data/n10m-r50.bin --repeats 5 --impl single | grep -E '^sample=|^median_core'
+} > "$LIVE/exp-threads-10m.txt" 2>&1
+echo "-> $LIVE/exp-threads-10m.txt"
+
+echo
 echo "##################### 4. 消融微基准（5 个变体） #####################"
 {
   echo "########## 1M random hit50 ##########"; ./bench/micro_variants data/n1m-r50.bin   14
