@@ -1,0 +1,76 @@
+# HPC-3 日志压缩与稳定筛选优化 —— 构建与运行依赖说明
+#
+# 本项目为纯 C++17 项目，不依赖任何第三方库。
+# 仅使用 C++ 标准库：<algorithm> <atomic> <chrono> <cstddef> <iomanip>
+#                   <iostream> <set> <string> <thread> <vector>
+#
+# ---------------------------------------------------------------------------
+# [文件布局]（根目录同时保留平台原始布局的副本，两种布局都能直接编译）
+#   CMakeLists.txt      多文件项目的构建入口
+#   optimized.cpp       ← 与 src/optimized.cpp 内容相同（评测目标：核心筛选实现）
+#   support.hpp         ← 与 src/support.hpp 内容相同（平台提供的结构体/编解码）
+#   baseline.cpp        ← 与 bench/baseline.cpp 内容相同（平台提供的原始基线，仅作对照）
+#   REPORT.md           实验报告
+#   src/  bench/  tests/  results/    源码、工具脚本、测试、实验证据（见各自说明）
+#   说明：根目录副本与 src/、bench/ 内的原文件逐字节一致（由 bench/package.sh 自检）。
+#
+# ---------------------------------------------------------------------------
+# [构建] g++ 13.3.0（或任何支持 C++17 的编译器，需支持 std::thread）
+#   优化实现: g++ -O2 -std=c++17 -pthread src/optimized.cpp -I src -o bench/optimized
+#   原始基线: g++ -O2 -std=c++17 -pthread bench/baseline.cpp -I src -o bench/baseline
+#   （bench/baseline.cpp 与平台提供的 baseline.cpp 逐字节一致，未做任何修改）
+#
+#   CMake 构建（等价路径，供按目录规范一键构建）：
+#     cmake -S . -B build && cmake --build build      → build/optimized、build/baseline
+#     带测试: cmake -S . -B build -DENABLE_TESTS=ON && ctest --test-dir build
+#   两条路径产物功能相同，编译口径一致（-O2 / C++17 / pthread）。
+#
+# [测试] Python 3.12 —— 仅使用标准库 unittest，无需 pip install
+#   公开测试: python3 tests/test_public.py bench/optimized
+#   回归测试: python3 tests/test_regression.py bench/optimized
+#   差分验证: python3 bench/diff_check.py --exe ./bench/optimized --base ./bench/baseline
+#
+# [第三轮新增：一键复现实验]
+#   快检查（约 35 秒）: bash bench/verify.sh
+#     终端打印摘要（环境/两次测试/60 组差分/5 个数据集逐字节比对）；
+#     全量记录写入 results/verify-quick.txt
+#   完整性能复现（约 10 分钟，含 10M 数据）: PERF_ASSUME_YES=1 bash bench/perf.sh 4 20
+#   逐样本交替 A/B 单测: bash bench/interleaved.sh data/n1m-r50.bin 20 6
+#   消融微基准: g++ -O2 -std=c++17 -pthread -mclflushopt -march=x86-64 \
+#                 bench/micro_variants.cpp bench/micro_core.cpp -I src -o bench/micro_variants
+#               ./bench/micro_variants data/n1m-r50.bin 14
+#   统计脚本: python3 bench/analyze_interleaved.py / analyze_versions.py / analyze_data_structure.py
+#   产物: results/ 下新增原始样本；results/ab-live/ 放全套复现输出（不覆盖既有证据）
+#
+# [向量化诊断] 若需复核 REPORT.md 第 3.6 节的编译器诊断，用这两个单循环源：
+#   g++ -O2 -std=c++17 -pthread -fopt-info-vec-all=stdout -c bench/onlyloop.cpp -I src -o /tmp/onlyloop.o
+#   g++ -O2 -std=c++17 -pthread -fopt-info-vec-all=stdout -c bench/baseLoop.cpp -I src -o /tmp/baseLoop.o
+#   （内容分别与 src/optimized.cpp 的单遍循环、bench/baseline.cpp 的循环逐字相同）
+#
+# [打包] 生成正式提交包并自动完成规范自检（单根目录/CMakeLists/无绝对路径/
+#        无软链接/无构建产物/无隐藏文件），且打包结果可复现（逐字节相同）：
+#          bash bench/package.sh        → ../HPC-3-submit.tar.gz
+#        该脚本对 tar 做了归一化（按名排序、mtime 固定、属主/权限归零，并设
+#        SOURCE_DATE_EPOCH），因此同一份源码重复打包得到**逐字节相同**的 tar.gz
+#        （实测两次打包 sha256/md5 一致）。核对方式：重新打包后比对 sha256。
+#        注：本文件（requirements.txt）在包内，故不记录包自身的指纹——那会自我指涉；
+#            包的可信度由"可复现"保证：同一份源码必得同一个包。
+#
+# [第四轮新增：图表可从原始样本重算]
+#   交付图表（数值内嵌，逐字节可复现）: python3 bench/make_charts.py
+#   数据驱动出图（现读 results/ 原始样本）: python3 bench/charts_from_data.py
+#   两者互为交叉校验：规模扫描 6 个点完全一致；命中率图 50% 点两来源不同（见 results/README.txt）
+#   命中率两端证据: results/ab-1m-r0.txt（2.89x）与 results/ab-1m-r100.txt（0.95x）
+#                   配对统计见 results/interleaved-extremes-summary.txt
+#
+# [运行]
+#   ./bench/optimized --input data/n1m-r50.bin --output out/result.bin --repeats 5
+#   可选: --impl single|twopass  默认 single（实测最快）
+#         --threads N            仅对 --impl twopass 生效
+#
+# [输入数据] 由平台提供的 generate_logs.py 生成（log-generator.v1）：
+#   python3 generate_logs.py --count 1000000 --hit-percent 50 --pattern random \
+#           --seed 2026 --output data/n1m-r50.bin
+#   各输入的 sha256 记录在 results/input-sha256*.txt 与 results/manifest-*.json
+#
+# 说明：本文件不含任何 pip 包，平台无需联网安装依赖。

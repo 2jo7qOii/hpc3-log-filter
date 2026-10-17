@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="420" viewBox="0 0 760 420" font-family="DejaVu Sans, Arial, sans-serif">
+<rect width="760" height="420" fill="#ffffff"/>
+<text x="380" y="26" text-anchor="middle" font-size="17" font-weight="bold">规模扫描：核心筛选耗时与加速比（命中率 50%、random 分布）</text>
+<line x1="78" y1="362.0" x2="682" y2="362.0" stroke="#e6e6e6"/>
+<text x="70" y="366.0" text-anchor="end" font-size="11" fill="#555">0</text>
+<text x="690" y="366.0" font-size="11" fill="#c1440e">0.0</text>
+<line x1="78" y1="298.8" x2="682" y2="298.8" stroke="#e6e6e6"/>
+<text x="70" y="302.8" text-anchor="end" font-size="11" fill="#555">22</text>
+<text x="690" y="302.8" font-size="11" fill="#c1440e">0.7</text>
+<line x1="78" y1="235.6" x2="682" y2="235.6" stroke="#e6e6e6"/>
+<text x="70" y="239.6" text-anchor="end" font-size="11" fill="#555">44</text>
+<text x="690" y="239.6" font-size="11" fill="#c1440e">1.4</text>
+<line x1="78" y1="172.4" x2="682" y2="172.4" stroke="#e6e6e6"/>
+<text x="70" y="176.4" text-anchor="end" font-size="11" fill="#555">66</text>
+<text x="690" y="176.4" font-size="11" fill="#c1440e">2.0</text>
+<line x1="78" y1="109.2" x2="682" y2="109.2" stroke="#e6e6e6"/>
+<text x="70" y="113.2" text-anchor="end" font-size="11" fill="#555">88</text>
+<text x="690" y="113.2" font-size="11" fill="#c1440e">2.7</text>
+<line x1="78" y1="46.0" x2="682" y2="46.0" stroke="#e6e6e6"/>
+<text x="70" y="50.0" text-anchor="end" font-size="11" fill="#555">110</text>
+<text x="690" y="50.0" font-size="11" fill="#c1440e">3.4</text>
+<text x="20" y="30" font-size="12" fill="#333">耗时 (ms，越低越好)</text>
+<text x="740" y="30" text-anchor="end" font-size="12" fill="#c1440e">加速比 (x)</text>
+<line x1="78" y1="362" x2="682" y2="362" stroke="#999"/>
+<text x="78.0" y="380" text-anchor="middle" font-size="11" fill="#555">100k</text>
+<text x="198.8" y="380" text-anchor="middle" font-size="11" fill="#555">250k</text>
+<text x="319.6" y="380" text-anchor="middle" font-size="11" fill="#555">500k</text>
+<text x="440.4" y="380" text-anchor="middle" font-size="11" fill="#555">1M</text>
+<text x="561.2" y="380" text-anchor="middle" font-size="11" fill="#555">2M</text>
+<text x="682.0" y="380" text-anchor="middle" font-size="11" fill="#555">10M</text>
+<polyline points="78.0,359.8 198.8,356.7 319.6,351.2 440.4,339.4 561.2,313.5 682.0,87.2" fill="none" stroke="#4a6fa5" stroke-width="2.4"/>
+<circle cx="78.0" cy="359.8" r="3.6" fill="#4a6fa5"/>
+<circle cx="198.8" cy="356.7" r="3.6" fill="#4a6fa5"/>
+<circle cx="319.6" cy="351.2" r="3.6" fill="#4a6fa5"/>
+<circle cx="440.4" cy="339.4" r="3.6" fill="#4a6fa5"/>
+<circle cx="561.2" cy="313.5" r="3.6" fill="#4a6fa5"/>
+<circle cx="682.0" cy="87.2" r="3.6" fill="#4a6fa5"/>
+<polyline points="78.0,361.1 198.8,359.4 319.6,356.9 440.4,351.1 561.2,340.5 682.0,212.7" fill="none" stroke="#2e8b57" stroke-width="2.4"/>
+<circle cx="78.0" cy="361.1" r="3.6" fill="#2e8b57"/>
+<circle cx="198.8" cy="359.4" r="3.6" fill="#2e8b57"/>
+<circle cx="319.6" cy="356.9" r="3.6" fill="#2e8b57"/>
+<circle cx="440.4" cy="351.1" r="3.6" fill="#2e8b57"/>
+<circle cx="561.2" cy="340.5" r="3.6" fill="#2e8b57"/>
+<circle cx="682.0" cy="212.7" r="3.6" fill="#2e8b57"/>
+<polyline points="78.0,127.9 198.8,168.9 319.6,162.5 440.4,169.0 561.2,152.1 682.0,190.6" fill="none" stroke="#c1440e" stroke-width="2.4" stroke-dasharray="6 3"/>
+<circle cx="78.0" cy="127.9" r="3.6" fill="#c1440e"/>
+<text x="78.0" y="118.9" text-anchor="middle" font-size="10" fill="#c1440e">2.51x</text>
+<circle cx="198.8" cy="168.9" r="3.6" fill="#c1440e"/>
+<text x="198.8" y="159.9" text-anchor="middle" font-size="10" fill="#c1440e">2.07x</text>
+<circle cx="319.6" cy="162.5" r="3.6" fill="#c1440e"/>
+<text x="319.6" y="153.5" text-anchor="middle" font-size="10" fill="#c1440e">2.14x</text>
+<circle cx="440.4" cy="169.0" r="3.6" fill="#c1440e"/>
+<text x="440.4" y="160.0" text-anchor="middle" font-size="10" fill="#c1440e">2.07x</text>
+<circle cx="561.2" cy="152.1" r="3.6" fill="#c1440e"/>
+<text x="561.2" y="143.1" text-anchor="middle" font-size="10" fill="#c1440e">2.25x</text>
+<circle cx="682.0" cy="190.6" r="3.6" fill="#c1440e"/>
+<text x="682.0" y="181.6" text-anchor="middle" font-size="10" fill="#c1440e">1.84x</text>
+<line x1="84" y1="22" x2="106" y2="22" stroke="#4a6fa5" stroke-width="2.6"/>
+<text x="112" y="26" font-size="11.5" fill="#333">baseline（原始）</text>
+<line x1="230" y1="22" x2="252" y2="22" stroke="#2e8b57" stroke-width="2.6"/>
+<text x="258" y="26" font-size="11.5" fill="#333">optimized（本实现）</text>
+<line x1="392" y1="22" x2="414" y2="22" stroke="#c1440e" stroke-width="2.6"/>
+<text x="420" y="26" font-size="11.5" fill="#333">加速比</text>
+<text x="380" y="406" text-anchor="middle" font-size="11" fill="#666">每点 = 跨轮最小值；原始样本 results/scale-sweep.txt</text>
+</svg>

@@ -29,6 +29,12 @@ _used = []
 for _f, _ in SOURCES:
     if _f not in _used:
         _used.append(_f)
+if not SOURCES:
+    raise SystemExit(
+        "错误：输入文件里没有可分析的原始样本（0 段实验）。\n"
+        "常见原因：交替测量步骤失败（例如 data/ 下缺少数据集，程序报 error: cannot open input），\n"
+        "或传入的文件不是 interleaved.sh 的产物。\n"
+        "请先补建数据集（bash bench/verify.sh）后重新运行 bash bench/interleaved.sh。")
 print(f"[数据来源] {len(_used)} 个文件（另有 {len(_cands) - len(_used)} 个文件不含原始样本，已跳过），"
       f"共 {len(SOURCES)} 段实验：")
 for _f in _used:

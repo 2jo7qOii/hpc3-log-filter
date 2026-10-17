@@ -1,0 +1,64 @@
+### 差分验证（多参数 × 多实现）
+$ python3 bench/diff_check.py --exe ./bench/optimized --base ./bench/baseline
+✅ case= 1 gen hit=0   random impl=single
+✅ case= 1 gen hit=0   random impl=twopass
+✅ case= 1 gen hit=0   random impl=twopass --threads 2
+✅ case= 2 gen hit=1   random impl=single
+✅ case= 2 gen hit=1   random impl=twopass
+✅ case= 2 gen hit=1   random impl=twopass --threads 2
+✅ case= 3 gen hit=10  random impl=single
+✅ case= 3 gen hit=10  random impl=twopass
+✅ case= 3 gen hit=10  random impl=twopass --threads 2
+✅ case= 4 gen hit=50  random impl=single
+✅ case= 4 gen hit=50  random impl=twopass
+✅ case= 4 gen hit=50  random impl=twopass --threads 2
+✅ case= 5 gen hit=90  random impl=single
+✅ case= 5 gen hit=90  random impl=twopass
+✅ case= 5 gen hit=90  random impl=twopass --threads 2
+✅ case= 6 gen hit=99  random impl=single
+✅ case= 6 gen hit=99  random impl=twopass
+✅ case= 6 gen hit=99  random impl=twopass --threads 2
+✅ case= 7 gen hit=100 random impl=single
+✅ case= 7 gen hit=100 random impl=twopass
+✅ case= 7 gen hit=100 random impl=twopass --threads 2
+✅ case= 8 gen hit=0   blocks impl=single
+✅ case= 8 gen hit=0   blocks impl=twopass
+✅ case= 8 gen hit=0   blocks impl=twopass --threads 2
+✅ case= 9 gen hit=1   blocks impl=single
+✅ case= 9 gen hit=1   blocks impl=twopass
+✅ case= 9 gen hit=1   blocks impl=twopass --threads 2
+✅ case=10 gen hit=10  blocks impl=single
+✅ case=10 gen hit=10  blocks impl=twopass
+✅ case=10 gen hit=10  blocks impl=twopass --threads 2
+✅ case=11 gen hit=50  blocks impl=single
+✅ case=11 gen hit=50  blocks impl=twopass
+✅ case=11 gen hit=50  blocks impl=twopass --threads 2
+✅ case=12 gen hit=90  blocks impl=single
+✅ case=12 gen hit=90  blocks impl=twopass
+✅ case=12 gen hit=90  blocks impl=twopass --threads 2
+✅ case=13 gen hit=99  blocks impl=single
+✅ case=13 gen hit=99  blocks impl=twopass
+✅ case=13 gen hit=99  blocks impl=twopass --threads 2
+✅ case=14 gen hit=100 blocks impl=single
+✅ case=14 gen hit=100 blocks impl=twopass
+✅ case=14 gen hit=100 blocks impl=twopass --threads 2
+✅ case=15 rows n=2      impl=single
+✅ case=15 rows n=2      impl=twopass
+✅ case=15 rows n=2      impl=twopass --threads 2
+✅ case=16 rows n=1      impl=single
+✅ case=16 rows n=1      impl=twopass
+✅ case=16 rows n=1      impl=twopass --threads 2
+✅ case=17 rows n=4096   impl=single
+✅ case=17 rows n=4096   impl=twopass
+✅ case=17 rows n=4096   impl=twopass --threads 2
+✅ case=18 rows n=4097   impl=single
+✅ case=18 rows n=4097   impl=twopass
+✅ case=18 rows n=4097   impl=twopass --threads 2
+✅ case=19 rows n=0      impl=single
+✅ case=19 rows n=0      impl=twopass
+✅ case=19 rows n=0      impl=twopass --threads 2
+✅ case=20 rows n=4095   impl=single
+✅ case=20 rows n=4095   impl=twopass
+✅ case=20 rows n=4095   impl=twopass --threads 2
+
+总计 60 次比对，失败 0 次

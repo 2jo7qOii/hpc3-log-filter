@@ -23,6 +23,24 @@ cd "$(dirname "$0")/.."
 
 IN="$1"; ROUNDS="${2:-10}"; PER="${3:-6}"
 OUT="${4:-results/interleaved-live.txt}"
+
+# 前置检查：数据集不随包分发，缺失时必须**立即退出**并给出可执行的补救命令，
+# 否则会跑满全部轮次、每轮都只打印 "error: cannot open input"，最后产出空文件（已踩到）。
+if [ ! -f "$IN" ]; then
+  cat >&2 <<EOF
+错误：输入文件不存在 —— $IN
+
+数据集不随提交包分发，需要先补建。任选一种：
+  (a) 补建全部数据集并做正确性复检（推荐，约 35 秒）:
+        bash bench/verify.sh
+  (b) 只生成这一份 1M 数据集:
+        mkdir -p data
+        ./bench/optimized --count 1000000 --hit-percent 50 --pattern random --seed 2026 --export-input data/n1m-r50.bin --repeats 1 > /dev/null
+补建后可核对 sha256（1M random/50 应为 d11bc48ae929db3f…）。
+EOF
+  exit 2
+fi
+
 mkdir -p "$(dirname "$OUT")"
 
 {
