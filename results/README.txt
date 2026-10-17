@@ -51,7 +51,13 @@ bench/perf.sh               完整性能复现：规模扫描+交替 A/B+消融�
 bench/interleaved.sh        逐样本交替 A/B 测量（单数据集）
 bench/micro_variants.cpp    消融微基准（5 变体）；配合 bench/micro_core.cpp 编译
 bench/analyze_versions.py   规模扫描统计（min/分位/CV/bootstrap 置信区间）
-bench/analyze_interleaved.py 交替样本配对统计（逐轮符号检验）
+bench/analyze_interleaved.py 交替样本配对统计（逐轮符号检验 + bootstrap 区间）
+                            用法：`... analyze_interleaved.py <文件>` 只分析指定文件（推荐）；
+                            不带参数则分析 results/ 下全部 interleaved-*.txt（含归档旧样本）。
+                            输出会逐段标注 [来源: 文件路径]，避免把归档旧样本误当成本次测量。
+bench/interleaved.sh        逐样本交替 A/B 测量；结果默认落盘 results/interleaved-live.txt
+                            （第四轮修正：原先只打印终端、不落盘，导致下一步分析读到的是
+                             仓库里的归档旧样本，容易误判）
 bench/analyze_data_structure.py 输入数据的谓词通过率/游程/可预测性分析
 
 ---- 第四轮补齐：命中率两端证据 + 图表可交叉校验 ----
