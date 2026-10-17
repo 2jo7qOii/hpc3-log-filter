@@ -43,3 +43,9 @@ results/ab-live/
 !results/*.txt
 !results/*.json
 !results/*.md
+
+# 本地验证用的临时解包目录（不进仓库）
+step5v/
+*-check/
+ab-live-test*/
+final-check/

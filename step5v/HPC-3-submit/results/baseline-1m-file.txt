@@ -1,6 +1,0 @@
-sample=0 core_ms=10.392948 matched=500129 check=PASS
-sample=1 core_ms=13.600831 matched=500129 check=PASS
-sample=2 core_ms=14.110073 matched=500129 check=PASS
-sample=3 core_ms=17.036726 matched=500129 check=PASS
-sample=4 core_ms=10.303459 matched=500129 check=PASS
-median_core_ms=13.600831 actual_hit_percent=50.0129 input_Mrecords_per_s=73.52491918
