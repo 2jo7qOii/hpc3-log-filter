@@ -633,7 +633,7 @@ A/B 顺序执行、每轮 5 次、取跨轮最小值（同一会话背靠背）�
 tar -xzf HPC-3-submit.tar.gz -C <目标目录> && cd <目标目录>/HPC-3-submit
 g++ -O2 -std=c++17 -pthread src/optimized.cpp  -I src -o bench/optimized
 g++ -O2 -std=c++17 -pthread bench/baseline.cpp -I src -o bench/baseline
-#   等价 CMake 路径： cmake -S . -B build && cmake --build build   （产物在 build/）
+#   等价 CMake 路径： cmake -S . -B build && cmake --build build   （产物 build/log_filter）
 
 # ② 正确性完整复检（约 35 秒；缺数据集时自动补建，产物 results/verify-quick.txt）
 bash bench/verify.sh

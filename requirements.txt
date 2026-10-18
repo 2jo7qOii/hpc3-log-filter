@@ -5,29 +5,41 @@
 #                   <iostream> <set> <string> <thread> <vector>
 #
 # ---------------------------------------------------------------------------
-# [文件布局]（根目录同时保留平台原始布局的副本，两种布局都能直接编译）
-#   CMakeLists.txt      多文件项目的构建入口
-#   optimized.cpp       ← 与 src/optimized.cpp 内容相同（评测目标：核心筛选实现）
-#   support.hpp         ← 与 src/support.hpp 内容相同（平台提供的结构体/编解码）
-#   baseline.cpp        ← 与 bench/baseline.cpp 内容相同（平台提供的原始基线，仅作对照）
-#   REPORT.md           实验报告
-#   src/  bench/  tests/  results/    源码、工具脚本、测试、实验证据（见各自说明）
-#   说明：根目录副本与 src/、bench/ 内的原文件逐字节一致（由 bench/package.sh 自检）。
+# [文件布局]（根目录只放一个 C++ 源文件；原始基线放在 bench/）
+#   optimized.cpp       根目录唯一 .cpp —— 评测实现（含 main，可直接编译运行）
+#   support.hpp         平台提供的结构体/编解码（未修改）
+#   CMakeLists.txt      目录规范要求的多文件构建入口（默认产出 build/log_filter）
+#   Makefile            等价的 make 入口（产物路径与 CMake 相同）
+#   README.md           构建运行说明
+#   requirements.txt    本文件
+#   REPORT.md / REPORT-SUMMARY.md   实验报告（完整版 / 精简版）
+#   src/                与根目录逐字节相同的工程布局副本（报告中的复现命令用）
+#   bench/              原始基线 baseline.cpp、复现脚本、消融/差分工具
+#   tests/              平台公开测试（逐字节未改）+ 自建回归测试
+#   results/            原始样本、输入/输出指纹、图表等实验证据
+#   说明：根目录 optimized.cpp / support.hpp 与 src/ 内文件逐字节一致
+#         （由 bench/package.sh 自检）；根目录不再放 baseline.cpp，避免任何
+#         "*\.cpp" 通配编译同时看到两个 main。
 #
 # ---------------------------------------------------------------------------
 # [构建] g++ 13.3.0（或任何支持 C++17 的编译器，需支持 std::thread）
-#   优化实现: g++ -O2 -std=c++17 -pthread src/optimized.cpp -I src -o bench/optimized
-#   原始基线: g++ -O2 -std=c++17 -pthread bench/baseline.cpp -I src -o bench/baseline
-#   （bench/baseline.cpp 与平台提供的 baseline.cpp 逐字节一致，未做任何修改）
-#
-#   CMake 构建（等价路径，供按目录规范一键构建）：
-#     cmake -S . -B build && cmake --build build      → build/optimized、build/baseline
-#     带测试: cmake -S . -B build -DENABLE_TESTS=ON && ctest --test-dir build
-#   两条路径产物功能相同，编译口径一致（-O2 / C++17 / pthread）。
+#   推荐 CMake（与平台目录规范一致；默认产出 build/log_filter 与同源的 build/optimized）：
+#     cmake -S . -B build && cmake --build build        → build/log_filter、build/optimized
+#     cmake --build build --target baseline             → build/baseline（仅对照）
+#   make（等价入口，产物路径相同）：
+#     make → build/log_filter、build/optimized；make baseline；make test
+#   手工编译（与 CMake 等价，均为 -O2 -std=c++17 -pthread）：
+#     mkdir -p build
+#     g++ -O2 -std=c++17 -pthread optimized.cpp -o build/log_filter
+#   用 src/ 布局时（报告第 8 节的命令）：
+#     g++ -O2 -std=c++17 -pthread src/optimized.cpp -I src -o bench/optimized
+#   原始基线（未修改，仅作对照）：
+#     g++ -O2 -std=c++17 -pthread bench/baseline.cpp -I src -o bench/baseline
 #
 # [测试] Python 3.12 —— 仅使用标准库 unittest，无需 pip install
-#   公开测试: python3 tests/test_public.py bench/optimized
-#   回归测试: python3 tests/test_regression.py bench/optimized
+#   ctest（CMake 构建后）: ctest --test-dir build --output-on-failure
+#   公开测试: python3 tests/test_public.py build/log_filter
+#   回归测试: python3 tests/test_regression.py build/log_filter
 #   差分验证: python3 bench/diff_check.py --exe ./bench/optimized --base ./bench/baseline
 #
 # [第三轮新增：一键复现实验]
@@ -64,7 +76,8 @@
 #                   配对统计见 results/interleaved-extremes-summary.txt
 #
 # [运行]
-#   ./bench/optimized --input data/n1m-r50.bin --output out/result.bin --repeats 5
+#   ./build/log_filter --count 1000000 --hit-percent 50 --repeats 5
+#   ./build/log_filter --input data/n1m-r50.bin --output out/result.bin --repeats 5
 #   可选: --impl single|twopass  默认 single（实测最快）
 #         --threads N            仅对 --impl twopass 生效
 #
