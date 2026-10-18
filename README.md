@@ -26,7 +26,8 @@
 | `Makefile` | 等价的 make 入口，产物路径与 CMake 相同 |
 | `README.md` | 本文件（构建、运行、测试、复现） |
 | `requirements.txt` | 依赖与全部命令的速查（无第三方库） |
-| `REPORT.md` / `REPORT-SUMMARY.md` | 完整实验报告 / 精简版 |
+| `REPORT.md` / `REPORT-SUMMARY.md` | 完整实验报告（A4 排版版）/ 精简版 |
+| `report.pdf` | 完整报告的 PDF（可直接打印/评审） |
 | `src/` | 与根目录逐字节相同的工程布局副本（报告复现命令使用） |
 | `bench/` | 原始基线 `baseline.cpp`、复现脚本、消融与差分工具 |
 | `tests/` | 平台公开测试（逐字节未改）+ 自建回归测试 |
@@ -104,8 +105,9 @@ python3 bench/analyze_interleaved.py results/interleaved-live.txt
 
 ## 文档与证据
 
-- [`REPORT.md`](REPORT.md) —— 完整实验报告（实现、假设、消融、退化场景、已知局限）
+- [`REPORT.md`](REPORT.md) —— 完整实验报告（A4 排版，实现、假设、消融、退化场景、已知局限）
 - [`REPORT-SUMMARY.md`](REPORT-SUMMARY.md) —— 精简版摘要
+- [`report.pdf`](report.pdf) —— 完整报告的 PDF（可直接打印/评审）
 - [`results/README.txt`](results/README.txt) —— 全部实验证据的索引
 
 ## 版本标签

@@ -12,7 +12,8 @@
 #   Makefile            等价的 make 入口（产物路径与 CMake 相同）
 #   README.md           构建运行说明
 #   requirements.txt    本文件
-#   REPORT.md / REPORT-SUMMARY.md   实验报告（完整版 / 精简版）
+#   REPORT.md / REPORT-SUMMARY.md   实验报告（A4 排版完整版 / 精简版）
+#   report.pdf          完整报告的 PDF（可直接打印/评审）
 #   src/                与根目录逐字节相同的工程布局副本（报告中的复现命令用）
 #   bench/              原始基线 baseline.cpp、复现脚本、消融/差分工具
 #   tests/              平台公开测试（逐字节未改）+ 自建回归测试

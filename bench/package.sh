@@ -37,7 +37,7 @@ trap 'rm -rf "$(dirname "$STAGE")" "$SMOKE"' EXIT
 echo "===== 1. 组装暂存目录 ====="
 mkdir -p "$STAGE/src" "$STAGE/bench" "$STAGE/tests" "$STAGE/results"
 
-cp -p REPORT.md REPORT-SUMMARY.md README.md requirements.txt CMakeLists.txt Makefile "$STAGE/"
+cp -p REPORT.md REPORT-SUMMARY.md report.pdf README.md requirements.txt CMakeLists.txt Makefile "$STAGE/"
 # 根目录只放一个 C++ 源文件（optimized.cpp）与它需要的 support.hpp。
 # 原始基线不再放根目录（否则 `g++ *.cpp` 会出现两个 main），保留在 bench/baseline.cpp。
 cp -p src/support.hpp src/optimized.cpp          "$STAGE/src/"
@@ -60,7 +60,7 @@ echo "===== 3. 规范自检 ====="
 fail=0
 # ① 单根目录：暂存目录本身就是一个根目录（下面用 tar 的相对路径保证）
 # ② 根目录/子目录必备项
-for f in optimized.cpp support.hpp CMakeLists.txt Makefile README.md requirements.txt REPORT.md \
+for f in optimized.cpp support.hpp CMakeLists.txt Makefile README.md requirements.txt REPORT.md report.pdf \
          src/optimized.cpp src/support.hpp tests/test_public.py tests/test_regression.py \
          bench/baseline.cpp bench/package.sh; do
   if [ -e "$STAGE/$f" ]; then printf '  ✅ 必备文件  %s\n' "$f"
